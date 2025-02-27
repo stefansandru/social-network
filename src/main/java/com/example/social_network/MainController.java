@@ -94,7 +94,7 @@ public class MainController {
         String url = "jdbc:postgresql://localhost:5432/postgres";
         String user = "stefansandru";
         String password = "1234";
-        String photosFolder = "/Users/stefansandru/Desktop";
+        String photosFolder = "/Users/stefansandru/Documents/social_network/ProfileImages";
         dbUserRepo userRepo = new dbUserRepo(
                 userValidator,
                 url,
@@ -125,8 +125,11 @@ public class MainController {
 
         try {
             File file = new File(profileImagePath);
+            System.out.println(file.getAbsolutePath());
             Image image = new Image(new FileInputStream(file));
+            System.out.println(image);
             profileImageView.setImage(image);
+            System.out.println(profileImageView.getImage());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -158,111 +161,6 @@ public class MainController {
             }
         }
     }
-
-//    private void loadFriends() {
-//        Page<User> page = service.findAllOnPage(new Pageable(pageSize, currentPage), userId);
-//        int maxPage = (int) Math.ceil((double) page.getTotalNumberOfElements() / pageSize) - 1;
-//        if (maxPage == -1) {
-//            maxPage = 0;
-//        }
-//        if (currentPage > maxPage) {
-//            currentPage = maxPage;
-//            page = service.findAllOnPage(new Pageable(pageSize, currentPage), userId);
-//        }
-//        totalNumberOfElements = page.getTotalNumberOfElements();
-//        buttonPrevious.setDisable(currentPage == 0);
-//        buttonNext.setDisable((currentPage + 1) * pageSize >= totalNumberOfElements);
-//        List<User> friends = StreamSupport.stream(page.getElementsOnPage().spliterator(), false)
-//                .toList();
-//        friendsList.clear();
-//        friendsList.putAll(friends.stream().collect(Collectors.toMap(u -> u, u -> LocalDateTime.now())));
-//        friendsListView.setItems(FXCollections.observableArrayList(friendsList.keySet()));
-//        friendsListView.setCellFactory(param -> new ListCell<>() {
-//            @Override
-//            protected void updateItem(User user, boolean empty) {
-//                super.updateItem(user, empty);
-//                if (empty || user == null) {
-//                    setText(null);
-//                } else {
-//                    setText(user.getName() + " - " + friendsList.get(user).toString());
-//                }
-//            }
-//        });
-//        labelPage.setText("Page " + (currentPage + 1) + " of " + (maxPage + 1));
-//    }
-
-//    private void loadFriends() {
-//    Page<User> page = service.findAllOnPage(new Pageable(pageSize, currentPage), userId);
-//    int maxPage = (int) Math.ceil((double) page.getTotalNumberOfElements() / pageSize) - 1;
-//    if (maxPage == -1) {
-//        maxPage = 0;
-//    }
-//    if (currentPage > maxPage) {
-//        currentPage = maxPage;
-//        page = service.findAllOnPage(new Pageable(pageSize, currentPage), userId);
-//    }
-//    totalNumberOfElements = page.getTotalNumberOfElements();
-//    buttonPrevious.setDisable(currentPage == 0);
-//    buttonNext.setDisable((currentPage + 1) * pageSize >= totalNumberOfElements);
-//    List<User> friends = StreamSupport.stream(page.getElementsOnPage().spliterator(), false)
-//            .toList();
-//    friendsList.clear();
-//    friendsList.putAll(friends.stream().collect(Collectors.toMap(u -> u, u -> LocalDateTime.now())));
-//    friendsListView.setItems(FXCollections.observableArrayList(friendsList.keySet()));
-//    friendsListView.setCellFactory(param -> new ListCell<>() {
-//        @Override
-//        protected void updateItem(User user, boolean empty) {
-//            super.updateItem(user, empty);
-//            if (empty || user == null) {
-//                setText(null);
-//                setGraphic(null);
-//            } else {
-//                try {
-//                    // Load user image
-//                    File file = new File(user.getProfileImagePath());
-//                    Image image = new Image(new FileInputStream(file));
-//                    ImageView imageView = new ImageView(image);
-//                    imageView.setFitHeight(70);
-//                    imageView.setFitWidth(70);
-//
-//                    // Get number of friends and total messages
-//                    int numberOfFriends = service.getNumberOfFriends(user.getId());
-//                    int totalMessages = service.getTotalMessagesSent(user.getId());
-//
-//                    Button unfriendButton = new Button("Unfriend");
-//                    unfriendButton.setOnAction(e -> handleUnfriend(user));
-//                    Button chatButton = new Button("Chat");
-//                    chatButton.setOnAction(e -> handleChat(user));
-//
-//                    // Create a VBox to hold the user details
-//                    VBox vBox = new VBox();
-//                    vBox.setAlignment(Pos.CENTER);
-//                    vBox.setPadding(new Insets(60, 10, 60, 10));
-//                    vBox.setSpacing(10);
-//                    vBox.getChildren().addAll(
-//                            imageView,
-//                            new Label(user.getName()){{
-//                                setStyle("-fx-font-size: 24");
-//                            }},
-//                            new Label(numberOfFriends == 1 ? "1 friend" : numberOfFriends + " friends"){{
-//                                setStyle("-fx-font-size: 18");
-//                            }},
-//                            new Label( totalMessages + " messages sent"){{
-//                                setStyle("-fx-font-size: 18");
-//                            }},
-//                            unfriendButton,
-//                            chatButton
-//                    );
-//
-//                    setGraphic(vBox);
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//    });
-//    labelPage.setText("Page " + (currentPage + 1) + " of " + (maxPage + 1));
-//}
 
     private void loadFriends() {
         Page<User> page = service.findAllOnPage(new Pageable(pageSize, currentPage), userId);

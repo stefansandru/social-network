@@ -98,13 +98,13 @@ public class dbUserRepo implements Repository<Long, User> {
 
     @Override
     public Optional<User> save(User entity) {
-        if (entity.getName().isEmpty())
-            throw new ValidationException("User name must not be null or empty");
-
-        String query = "INSERT INTO users (name) VALUES (?)";
+        String query = "INSERT INTO users (name, password, profile_image_path) VALUES (?, ?, ?)";
         try (Connection connection = DriverManager.getConnection(url, this.user, password);
              PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+
             statement.setString(1, entity.getName());
+            statement.setString(2, entity.getPassword());
+            statement.setString(3, entity.getProfileImagePath());
 
             int affectedRows = statement.executeUpdate();
             if (affectedRows > 0) {
@@ -134,6 +134,7 @@ public class dbUserRepo implements Repository<Long, User> {
 
             statement.setLong(1, id);
             statement.executeUpdate();
+
         } catch (SQLException e) {
             e.printStackTrace();
             return Optional.empty();
@@ -158,9 +159,32 @@ public class dbUserRepo implements Repository<Long, User> {
             if (rowsUpdated == 0) {
                 return Optional.empty();
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return Optional.of(entity);
+    }
+
+    public Optional<User> findUserByUsername(String username) {
+        String query = "SELECT * FROM users WHERE name = ?";
+        try (Connection connection = DriverManager.getConnection(url, this.user, password);
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setString(1, username);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Long id = resultSet.getLong("id");
+                String name = resultSet.getString("name");
+                String password = resultSet.getString("password");
+                String profileImagePath = resultSet.getString( "profile_image_path");
+                User user = new User(id, name, password,photosFolder +  profileImagePath);
+                return Optional.of(user);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 }

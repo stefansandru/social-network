@@ -9,6 +9,7 @@ import com.example.social_network.domain.Tuple;
 import com.example.social_network.domain.User;
 import com.example.social_network.paging.Page;
 import com.example.social_network.paging.Pageable;
+import com.example.social_network.util.PasswordUtil;
 
 import java.util.*;
 import java.time.LocalDateTime;
@@ -23,6 +24,22 @@ public class SocialNetworkService {
         this.userRepo  = userRepo;
         this.friendshipRepo = friendshipRepo;
         this.messageRepo = messageRepo;
+    }
+
+    public void addUser(String username) {
+        try {
+            if (userRepo.findUserByUsername(username).isPresent()) {
+                throw new RuntimeException("Username already exists");
+            }
+            String plainPassword = "pass" + username;
+            String hashedPassword = PasswordUtil.hashPassword(plainPassword);
+            Integer imageNumber = new Random().nextInt(6) + 1;
+            String photo =  "/imag" + imageNumber + ".jpeg";
+            User user = new User(null, username, hashedPassword, photo);
+            userRepo.save(user);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     public void addFriendship(Long userId1, Long userId2, String Status) {
@@ -62,10 +79,6 @@ public class SocialNetworkService {
 
     public List<User> getNotFriends(Long userId) {
         List<User > notfriends = friendshipRepo.getNotFriendsRepository(userId);
-        System.out.println("Not friends service:");
-        for (User user : notfriends) {
-            System.out.println(user);
-        }
         return notfriends;
     }
 
@@ -110,5 +123,9 @@ public class SocialNetworkService {
 
     public int getTotalMessagesSent(Long id) {
         return messageRepo.getTotalMessagesSent(id);
+    }
+
+    public User findUserByUsername(String username) {
+        return userRepo.findUserByUsername(username).orElse(null);
     }
 }

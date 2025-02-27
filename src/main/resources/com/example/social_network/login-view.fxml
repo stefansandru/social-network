@@ -13,11 +13,12 @@
         <padding>
             <Insets bottom="20" left="20" right="20" top="20"/>
         </padding>
-        <Label text="User ID" styleClass="text"/>
-        <TextField fx:id="userIdField" promptText="Enter your user ID" styleClass="text-field"/>
-        <Label text="Password" styleClass="text"/>
+        <Label text="Username:" styleClass="text"/>
+        <TextField fx:id="usernameField" promptText="Enter your username" styleClass="text-field"/>
+        <Label text="Password:" styleClass="text"/>
         <TextField fx:id="passwordField" promptText="Enter your password"/>
     </VBox>
     <Button text="Login" onAction="#handleLogin"/>
+    <Button text="Register" onAction="#handleRegister"/>
     <Label fx:id="errorText" wrapText="true" visible="false"/>
 </VBox>
