@@ -38,10 +38,11 @@
             UserValidator userValidator = new UserValidator();
             FriendshipValidator friendshipValidator = new FriendshipValidator();
 
-            String url = "jdbc:postgresql://localhost:5432/postgres";
-            String user = "stefansandru";
-            String password = "1234";
-            String photosFolder = "/Users/stefansandru/Documents/social_network/ProfileImages";
+            String url = DBConnectionAndProfileImagesPath.INSTANCE.getUrl();
+            String user = DBConnectionAndProfileImagesPath.INSTANCE.getUser();
+            String password = DBConnectionAndProfileImagesPath.INSTANCE.getPassword();
+            String photosFolder = DBConnectionAndProfileImagesPath.INSTANCE.getPhotosFolder();
+
             dbUserRepo userRepo = new dbUserRepo(userValidator, url, user, password, photosFolder);
             dbFriendshipRepo friendshipRepo = new dbFriendshipRepo(friendshipValidator, url, user, password, photosFolder);
             MessageRepo messageRepo = new MessageRepo(url, user, password, userRepo);

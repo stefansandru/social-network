@@ -1,6 +1,5 @@
 package com.example.social_network;
 
-import com.example.social_network.util.PasswordUtil;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -13,12 +12,24 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         try {
+            // Replace the values with your own database connection details and profile images path
+            DBConnectionAndProfileImagesPath.INSTANCE.setUrl
+                ("jdbc:postgresql://localhost:5432/social_network");
+            DBConnectionAndProfileImagesPath.INSTANCE.setUser
+                ("stefansandru");
+            DBConnectionAndProfileImagesPath.INSTANCE.setPassword
+                ("1234"); 
+            DBConnectionAndProfileImagesPath.INSTANCE.setPhotosFolder
+                ("/Users/stefansandru/Documents/social_network/ProfileImages");
+            
+            // Load UI components
             FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("login-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), 500, 500);
             scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
             stage.setTitle("Social Network");
             stage.setScene(scene);
             stage.show();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

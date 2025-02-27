@@ -1,132 +1,146 @@
 # Social_Network
 
-Proiectul reprezintă o aplicație Java pentru o rețea socială de tip Facebook, rulând cu interfață grafică JavaFX și bază de date PostgreSQL. Scopul aplicației este să permită utilizatorilor să se înregistreze, să se conecteze, să-și adauge prieteni, să trimită mesaje private și să vizualizeze chat-uri.
+This project is a Java application for a Facebook-style social network, running with a JavaFX graphical interface and PostgreSQL database. The purpose of the application is to allow users to register, log in, add friends, send private messages, and view chats.
 
-------------------------------------------------------------------------------
-## Caracteristici principale
+## Main Features
 
-- Autentificare utilizatori cu parole criptate (BCrypt).
-- Gestiunea conturilor de utilizator (creare, ștergere, actualizare).
-- Gestionarea prieteniilor (adăugare, acceptare, respingere, ștergere).
-- Trimiterea și recepționarea de mesaje (inclusiv răspuns “reply” la un mesaj anterior).
-- Vizualizarea și paginarea listei de prieteni în interfața grafică.
-- Notificări despre cererile de prietenie în așteptare.
+- **User authentication:** Uses encrypted passwords with BCrypt.
+- **User account management:** Create, delete, and update accounts.
+- **Friendship management:** Add, accept, reject, and delete friendships.
+- **Messaging:** Send and receive messages (including replying to previous messages).
+- **Friends list:** View and paginate your friends list within the graphical interface.
+- **Notifications:** Get notified about pending friendship requests.
 
-------------------------------------------------------------------------------
-## Cerințe de sistem
+## System Requirements
 
-- Java 17+.
-- PostgreSQL (instalat și configurat la adresa și datele de conectare corespunzătoare).  
-  Implicit, proiectul este configurat să se conecteze la:
-  - URL: jdbc:postgresql://localhost:5432/postgres
-  - Utilizator DB: stefansandru
-  - Parola DB: 1234
+- **Java:** Version 17.
+- **JavaFX:** [Download and configuration instructions](https://openjfx.io/).
+- **PostgreSQL:** Ensure it is installed and properly configured.
 
-Dacă doriți să folosiți alte date de conectare sau altă bază de date, trebuie ajustate valorile din cod (de exemplu, în dbUserRepo, dbFriendshipRepo și MessageRepo).
+*Note:* If you want to use different connection data or a different database, adjust the values in the `DBConnectionAndProfileImagesPath` class or directly in the repository classes.
 
-------------------------------------------------------------------------------
-## Structura proiectului
+## Project Structure
 
-1. Fisierele Java principale se află în pachetul com.example.social_network:
-   - HelloApplication.java – Clasa de start pentru aplicația JavaFX.
-   - MainController.java – Controller principal, gestionează interfața (listarea prietenilor, căutări, etc.).
-   - LoginController.java – Controller pentru ecranul de login.
-   - ChatController.java – Controller pentru fereastra de chat (afișare mesaje, trimitere de mesaje, reply etc.).
-   - MultipleMessage.java – Exemplu de controller pentru trimiterea de mesaje către mai mulți destinatari (dacă este implementat).
+The main Java files are in the `com.example.social_network` package:
 
-2. Pachetul Service:
-   - SocialNetworkService.java – Logica principală a aplicației (adăugare prietenii, trimitere mesaje, afișare date etc.).
+- **HelloApplication.java** – The starter class for the JavaFX application.
+- **MainController.java** – Manages the main interface (listing friends, search functionality, etc.).
+- **LoginController.java** – Handles the login screen.
+- **ChatController.java** – Manages the chat window (displaying messages, sending messages, replying, etc.).
+- **MultipleMessage.java** – Facilitates sending messages to multiple recipients.
+- **DBConnectionAndProfileImagesPath.java** – A singleton for database connection configuration.
 
-3. Pachetul Repo (Repository Pattern):
-   - dbUserRepo.java – Interacțiune cu tabelul „users”.
-   - dbFriendshipRepo.java – Interacțiune cu tabelul „friendships”.
-   - MessageRepo.java – Interacțiune cu tabela „messages” și relația dintre mesaje și destinatari.
+### Service Package
 
-4. Pachetul domain (Model):
-   - User.java, Friendship.java, Message.java, Tuple.java etc.
-   - Reprezintă entitățile din baza de date și datele pe care le gestionează aplicația.
+- **SocialNetworkService.java** – Contains the core application logic (friendships, messaging, data display, etc.).
 
-5. Pachetul util:
-   - PasswordUtil.java – Funcționalități de criptare și verificare a parolelor (folosește BCrypt).
+### Repository Package
 
-6. Resurse JavaFX (SceneBuilder):
-   - FXML-uri pentru ecrane (login-view.fxml, main-view.fxml, chat-view.fxml etc.).
-   - Fișiere CSS/stiluri (style.css).
+- **dbUserRepo.java** – Handles interactions with the `users` table.
+- **dbFriendshipRepo.java** – Handles interactions with the `friendships` table.
+- **MessageRepo.java** – Manages interactions with the `messages` table and its relationship with message recipients.
 
-------------------------------------------------------------------------------
-## Bază de date
+### Domain Package (Model)
 
-Este nevoie să existe următoarele tabele (sau echivalente) în PostgreSQL:
+Contains the model classes:
 
-- users  
-  Coloane recomandate (ID bigint primary key, name text, password text, profile_image_path text, etc.)
+- **User.java, Friendship.java, Message.java, Tuple.java, etc.**
+- These classes represent the database entities and the data managed by the application.
 
-- friendships  
-  Coloane (id1, id2, f_date timestamp, status text). Unde id1 și id2 sunt ID-urile utilizatorilor care formează o prietenie.
+### Utility Package
 
-- messages  
-  Coloane (id bigint primary key, from_user_id bigint, message text, date timestamp, reply_to bigint [opțional pentru reply]).  
+- **PasswordUtil.java** – Provides password encryption and verification functionalities using BCrypt.
 
-- message_recipients  
-  (message_id bigint, to_user_id bigint), pentru a marca destinatarii legați de fiecare mesaj.
+### JavaFX Resources (Scene Builder)
 
-Notă: Script-urile de creare a acestor tabele nu sunt incluse direct în proiect. Va trebui să configurați manual schema în baza de date.
+- **FXML Files:** For screens like `login-view.fxml`, `main-view.fxml`, `chat-view.fxml`, etc.
+- **CSS/Style Files:** Such as `style.css`.
 
-------------------------------------------------------------------------------
-## Pași pentru rulare
+## Database
 
-1. Clonați proiectul în mediul vostru local (sau descărcați-l arhivat).
-2. Asigurați-vă că PostgreSQL rulează și ați actualizat conexiunea la baza de date în fișierele dbUserRepo, dbFriendshipRepo și MessageRepo (dacă e nevoie de alți parametri).
-3. Deschideți un terminal în directorul principal al proiectului.
-4. Rulați comanda pentru încărcarea wrapper-ului Gradle și compilare:
-   
-   pe Linux/Mac:
-   » ./gradlew build
-   
-   pe Windows:
-   » gradlew.bat build
-5. Pentru a porni aplicația:
-   pe Linux/Mac:
-   » ./gradlew run
-   
-   pe Windows:
-   » gradlew.bat run
+The following tables need to exist in PostgreSQL:
 
-6. Se va deschide fereastra de login JavaFX. Introduceți un ID de utilizator valid (ex.: 1, 2, 3) și parola aferentă.
+### users
+- **Columns:** `ID` (SERIAL PRIMARY KEY), `name` (VARCHAR), `password` (VARCHAR), `profile_image_path` (VARCHAR).
 
-------------------------------------------------------------------------------
-## Funcționalități în interfață
+### friendships
+- **Columns:** `ID1` (INTEGER), `ID2` (INTEGER), `F_DATE` (TIMESTAMP), `STATUS` (VARCHAR).  
+  *Note:* `ID1` and `ID2` represent the IDs of users who form a friendship.
 
-- Login: Introduceți ID și parolă. Verificarea are loc prin comparare criptată cu ce există în baza de date.
-- În fereastra principală:
-  - Vă puteți afișa lista de prieteni, cu opțiuni de paginare (Next / Previous).
-  - Se afișează butoane pentru “Unfriend”, “Chat”.  
-  - Puteți căuta persoane necunoscute (care nu sunt în lista de prieteni) și le puteți trimite cereri de prietenie.
-  - Veți vedea cereri de prietenie în așteptare și puteți accepta sau respinge.
-- Chat: Trimite mesaje individuale către un utilizator. Se pot face reply la un mesaj anterior pentru a continua conversația.
+### messages
+- **Columns:** `id` (SERIAL PRIMARY KEY), `from_user_id` (INTEGER), `message` (TEXT), `date` (TIMESTAMP), `reply_to` (INTEGER).
 
-------------------------------------------------------------------------------
-## Dezvoltare și extensii
+### message_recipients
+- **Columns:** `message_id` (INTEGER), `to_user_id` (INTEGER).  
+  This table maps messages to their respective recipients.
 
-- Adăugați validări suplimentare sau reguli personalizate în FriendshipValidator.java și UserValidator.java.
-- Puteți extinde interfața grafică cu mai multe scene (FXMLE) pentru profil utilizator, setări, etc.
-- Puteți introduce testare automată folosind JUnit (framework inclus).
+## Database Configuration Scripts
 
-------------------------------------------------------------------------------
-## Contribuții / Copyright
+To configure the database required for the application, follow these steps in your terminal:
 
-Acesta este un proiect demo/educațional. Pentru întrebări sau contribuții, puteți sincroniza un fork al acestui repository.  
+```sql
+-- Connect to PostgreSQL
+psql postgres
 
-------------------------------------------------------------------------------
-## Suport
+-- Create database
+CREATE DATABASE social_network;
 
-Pentru erori sau întrebări legate de proiect:
+-- Connect to the database
+\connect social_network;
 
-1. Verificați dacă rularea cu Java 17+ rezolvă problemele de compatibilitate.
-2. Asigurați-vă că baza de date PostgreSQL este configurată corect și rulează.
-3. În cazul mesajelor de eroare SQL, verificați tabelele și drepturile utilizatorului BD.
-4. Dacă întâmpinați erori la compilare, asigurați-vă că toate dependențele indică mavenCentral() și că aveți conexiune la internet.
+-- Create tables
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    profile_image_path VARCHAR(255)
+);
 
-------------------------------------------------------------------------------
+CREATE TABLE messages (
+    id SERIAL PRIMARY KEY,
+    from_user_id INTEGER NOT NULL,
+    message TEXT NOT NULL,
+    date TIMESTAMP NOT NULL,
+    reply_to INTEGER,
+    CONSTRAINT fk_from_user
+        FOREIGN KEY (from_user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_reply_message
+        FOREIGN KEY (reply_to)
+        REFERENCES messages(id)
+        ON DELETE SET NULL
+);
 
-© 2023 Proiect demonstrativ – Social_Network.  
+CREATE TABLE message_recipients (
+    message_id INTEGER NOT NULL,
+    to_user_id INTEGER NOT NULL,
+    PRIMARY KEY (message_id, to_user_id),
+    CONSTRAINT fk_message_id
+        FOREIGN KEY (message_id)
+        REFERENCES messages(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_to_user
+        FOREIGN KEY (to_user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE Friendships (
+    ID1 INTEGER NOT NULL,
+    ID2 INTEGER NOT NULL,
+    F_DATE TIMESTAMP NOT NULL,
+    STATUS VARCHAR(50) NOT NULL,
+    PRIMARY KEY (ID1, ID2),
+    CONSTRAINT fk_friendship_user1
+        FOREIGN KEY (ID1)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_friendship_user2
+        FOREIGN KEY (ID2)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+);
+
+-- Verify tables
+\dt
