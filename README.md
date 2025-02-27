@@ -17,8 +17,6 @@ This project is a Java application for a Facebook-style social network, running 
 - **JavaFX:** [Download and configuration instructions](https://openjfx.io/).
 - **PostgreSQL:** Ensure it is installed and properly configured.
 
-*Note:* If you want to use different connection data or a different database, adjust the values in the `DBConnectionAndProfileImagesPath` class or directly in the repository classes.
-
 ## Project Structure
 
 The main Java files are in the `com.example.social_network` package:
