@@ -48,7 +48,7 @@ You can download the JavaFX SDK 21.0.6 from the official Gluon website. Here is 
 2. Extract the downloaded SDK to a directory of your choice.
 3. Add the `lib` directory from the extracted SDK to your project's module path.
 
-If you are using IntelliJ IDEA:
+If you are using **IntelliJ IDEA**:
 
 1. Open your project settings (File > Project Structure).
 2. Go to Modules > Dependencies.
@@ -61,7 +61,7 @@ Make sure to also add the necessary VM options to run your JavaFX application:
 ```
 Replace `/path/to/javafx-sdk-21.0.6/lib` with the actual path where you extracted the SDK.
 
-If your are using Visual Studio Code:
+If your are using **Visual Studio Code**:
 
 1. Install the Extension Pack for Java by Microsoft from Visual Studio Code Extensions.
 2. Add the `javafx-sdk-21.0.6/lib` folder to JAVA PROJECTS, Referenced Libraries
@@ -145,16 +145,9 @@ CREATE TABLE friendships (
 
 ### Step 6: Project Configuration
 
-1. Ensure that `HelloApplication.java` and other classes are correctly set up to connect to the PostgreSQL database. The main configuration file is located in the path:
+Replace the values with your own database connection details and profile images path in HelloApplication.java
     ```
     src/main/java/com/example/social_network/HelloApplication.java
-    ```
-
-2. Update the database connection details in `DBConnectionAndProfileImagesPath.java`:
-    ```java
-    private static final String URL = "jdbc:postgresql://localhost:5432/social_network";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "your_password";
     ```
 
 ### Step 7: Build and Run the Project
