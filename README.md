@@ -64,12 +64,13 @@ Replace `/path/to/javafx-sdk-21.0.6/lib` with the actual path where you extracte
 If your are using Visual Studio Code:
 
 1. Install the Extension Pack for Java by Microsoft from Visual Studio Code Extensions.
-2. the`javafx-sdk-21.0.6/lib` folder to JAVA PROJECTS, Referenced Libraries
+2. Add the `javafx-sdk-21.0.6/lib` folder to JAVA PROJECTS, Referenced Libraries
 <img width="403" alt="image" src="https://github.com/user-attachments/assets/643d5ac6-aed4-4fcb-96fc-6f1e270f16eb" />
+
 3. If necessary, add the following VM options in your launch.json file to include JavaFX modules:
 ```json
 "vmArgs": "--module-path /path/to/javafx-sdk-21.0.6/lib --add-modules javafx.controls,javafx.fxml"
-,,,
+```
 Replace `/path/to/javafx-sdk-21.0.6/lib` with the actual path where you extracted the SDK.
 ### Step 4: Install PostgreSQL
 
