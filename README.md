@@ -14,7 +14,7 @@ This project is a Java application for a Facebook-style social network, running 
 ## System Requirements
 
 - **Java:** Version 17.
-- **JavaFX:** Download and configuration instructions: https://gluonhq.com/products/javafx/.
+- **JavaFX:** [Download and configuration instructions]([https://openjfx.io/](https://gluonhq.com/products/javafx/)).
 - **PostgreSQL:** Ensure it is installed and properly configured.
 
 ## Project Structure
@@ -142,3 +142,5 @@ CREATE TABLE Friendships (
 
 -- Verify tables
 \dt
+
+
