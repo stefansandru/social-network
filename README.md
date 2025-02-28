@@ -42,9 +42,25 @@ This project is a Java application for a Facebook-style social network, running 
 
 ### Step 3: Set Up JavaFX
 
-1. Download JavaFX from [Gluon](https://gluonhq.com/products/javafx/).
-2. Follow the installation instructions for your operating system.
-3. Add the JavaFX libraries to your project.
+You can download the JavaFX SDK 21.0.6 from the official Gluon website. Here is the link to download and instructions on how to configure it:
+
+1. [Download JavaFX SDK 21.0.6](https://gluonhq.com/products/javafx/)
+To configure JavaFX with your project:
+2. Extract the downloaded SDK to a directory of your choice.
+3. Add the `lib` directory from the extracted SDK to your project's module path.
+
+For example, if you are using IntelliJ IDEA:
+
+1. Open your project settings (File > Project Structure).
+2. Go to Modules > Dependencies.
+3. Click the `+` icon and select "JARs or directories".
+4. Choose the `lib` directory from the extracted JavaFX SDK.
+Make sure to also add the necessary VM options to run your JavaFX application:
+
+```
+--module-path /path/to/javafx-sdk-21.0.6/lib --add-modules javafx.controls,javafx.fxml
+```
+Replace `/path/to/javafx-sdk-21.0.6/lib` with the actual path where you extracted the SDK.
 
 ### Step 4: Install PostgreSQL
 
