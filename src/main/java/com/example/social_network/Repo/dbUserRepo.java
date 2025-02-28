@@ -1,7 +1,6 @@
 package com.example.social_network.Repo;
 
 import com.example.social_network.Validator.UserValidator;
-import com.example.social_network.Validator.ValidationException;
 import com.example.social_network.domain.User;
 
 import java.sql.*;
@@ -9,7 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class dbUserRepo implements Repository<Long, User> {
+    private static final Logger logger = LoggerFactory.getLogger(dbUserRepo.class);
+
     private final String url;
     private final String user;
     private final String password;
@@ -47,8 +51,7 @@ public class dbUserRepo implements Repository<Long, User> {
                 user = new User(userID, name, password, photosFolder + profileImagePath);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            logger.error("Database error:", e);        }
         return Optional.ofNullable(user);
     }
 
@@ -69,8 +72,7 @@ public class dbUserRepo implements Repository<Long, User> {
                 users.put(id, user);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            logger.error("Database error:", e);        }
         return users.values();
     }
 
@@ -82,6 +84,7 @@ public class dbUserRepo implements Repository<Long, User> {
 
             statement.setString(1, prefix + "%");
             ResultSet resultSet = statement.executeQuery();
+
             while (resultSet.next()) {
                 Long id = resultSet.getLong("id");
                 String name = resultSet.getString("name");
@@ -91,8 +94,7 @@ public class dbUserRepo implements Repository<Long, User> {
                 users.put(id, user);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            logger.error("Database error:", e);        }
         return users.values();
     }
 
@@ -116,8 +118,7 @@ public class dbUserRepo implements Repository<Long, User> {
                 return Optional.of(entity);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            logger.error("Database error:", e);        }
         return Optional.empty();
     }
 
@@ -136,8 +137,7 @@ public class dbUserRepo implements Repository<Long, User> {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return Optional.empty();
+            logger.error("Database error:", e);            return Optional.empty();
         }
         return userToDelete;
     }
@@ -161,8 +161,7 @@ public class dbUserRepo implements Repository<Long, User> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            logger.error("Database error:", e);        }
         return Optional.of(entity);
     }
 
@@ -183,8 +182,7 @@ public class dbUserRepo implements Repository<Long, User> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            logger.error("Database error:", e);        }
         return Optional.empty();
     }
 }

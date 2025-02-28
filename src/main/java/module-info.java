@@ -5,6 +5,7 @@ module com.example.social_network {
     requires java.desktop;
     requires spring.security.core;
     requires spring.security.crypto;
+    requires org.slf4j;
 
     opens com.example.social_network to javafx.fxml;
     exports com.example.social_network;

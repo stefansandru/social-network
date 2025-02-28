@@ -9,7 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class MessageRepo {
+    private static final Logger logger = LoggerFactory.getLogger(MessageRepo.class);
+
     private final String url;
     private final String user;
     private final String password;
@@ -39,8 +44,8 @@ public class MessageRepo {
                 Long fromId = resultSet.getLong("from_user_id");
                 String messageString = resultSet.getString("message");
                 LocalDateTime date = resultSet.getTimestamp("date").toLocalDateTime();
-                Long replyId = resultSet.getLong("reply_to");
-                message = new Message(messageId,
+                message = new Message(
+                        messageId,
                         userRepo.findOne(fromId).orElse(null),
                         new ArrayList<>(),
                         messageString,
@@ -48,7 +53,7 @@ public class MessageRepo {
                         null);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Database operation failed", e);
         }
         return Optional.ofNullable(message);
     }
@@ -83,7 +88,7 @@ public class MessageRepo {
                 messages.add(message);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Database operation failed", e);
         }
         return messages;
     }
@@ -99,10 +104,7 @@ public class MessageRepo {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Long userId = resultSet.getLong("to_user_id");
-                User user = userRepo.findOne(userId).orElse(null);
-                if (user != null) {
-                    recipients.add(user);
-                }
+                userRepo.findOne(userId).ifPresent(recipients::add);
             }
         }
         return recipients;
@@ -129,7 +131,7 @@ public class MessageRepo {
                 return Optional.of(message);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Database operation failed", e);
         }
         return Optional.empty();
     }
@@ -162,7 +164,7 @@ public class MessageRepo {
                 count = resultSet.getInt(1);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Database operation failed", e);
         }
         return count;
     }

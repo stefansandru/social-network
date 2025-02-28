@@ -7,14 +7,18 @@ import com.example.social_network.domain.Tuple;
 import com.example.social_network.domain.User;
 import com.example.social_network.paging.Page;
 import com.example.social_network.paging.Pageable;
-//import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.StreamSupport;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class dbFriendshipRepo implements Repository<Tuple<Long, Long>, Friendship> {
+   private static final Logger logger = LoggerFactory.getLogger(dbFriendshipRepo.class);
+
     private final String url;
     private final String user;
     private final String password;
@@ -142,7 +146,8 @@ public class dbFriendshipRepo implements Repository<Tuple<Long, Long>, Friendshi
             statement.setLong(6, entity.getId().getLeft());
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.error("Database error while updating friendship: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to update friendship", e);
         }
 
         return Optional.of(entity);
@@ -170,7 +175,7 @@ public class dbFriendshipRepo implements Repository<Tuple<Long, Long>, Friendshi
                 users.add(new User(id, name, password, profileImagePath));
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.error("Database error: {}", e.getMessage());
         }
         return users;
     }
@@ -195,7 +200,7 @@ public class dbFriendshipRepo implements Repository<Tuple<Long, Long>, Friendshi
                 notFriends.add(new User(id, name, password, profileImagePath));
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.error("Database error: {}", e.getMessage());
         }
         return notFriends;
     }
@@ -241,7 +246,7 @@ public class dbFriendshipRepo implements Repository<Tuple<Long, Long>, Friendshi
                 friends.put(new User(id, name, "no password needed", profileImagePath), date);
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.error("Database error: {}", e.getMessage());
         }
         return friends;
     }
@@ -270,97 +275,10 @@ public class dbFriendshipRepo implements Repository<Tuple<Long, Long>, Friendshi
                 friendsOnPage.add(new User(id, name, "no password needed",photosFolder + profileImagePath));
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.error("Database error: {}", e.getMessage());
         }
-        return new Page(friendsOnPage, getNumberOfFriends(id1));
+        return new Page<>(friendsOnPage, getNumberOfFriends(id1));
     }
-
-//public Page<VBox> findFriendsOnPage(Pageable pageable, Long id1) {
-//    List<VBox> friendsOnPage = new ArrayList<>();
-//    String sql = "SELECT u.id, u.name, u.profile_image_path FROM users u JOIN friendships f ON (u.id = f.id1 OR u.id = f.id2) WHERE (f.id1 = ? OR f.id2 = ?) AND f.status = 'active' AND u.id <> ? limit ? offset ?";
-//    try (Connection connection = DriverManager.getConnection(url, this.user, password);
-//         PreparedStatement statement = connection.prepareStatement(sql)) {
-//        statement.setLong(1, id1);
-//        statement.setLong(2, id1);
-//        statement.setLong(3, id1);
-//        statement.setInt(4, pageable.getPageSize());
-//        statement.setInt(5, pageable.getPageSize() * pageable.getPageNumber());
-//        ResultSet resultSet = statement.executeQuery();
-//        while (resultSet.next()) {
-//            Long id = resultSet.getLong("id");
-//            String name = resultSet.getString("name");
-//            String profileImagePath = resultSet.getString("profile_image_path");
-//            User user = new User(id, name, "no password needed", photosFolder + profileImagePath);
-//
-//            // Create VBox for each user
-//            VBox vBox = createUserVBox(user);
-//            friendsOnPage.add(vBox);
-//        }
-//    } catch (SQLException e) {
-//        System.out.println(e.getMessage());
-//    }
-//    return new Page<>(friendsOnPage, getNumberOfFriends(id1));
-//}
-//
-//    private VBox createUserVBox(User user) {
-//        try {
-//            File file = new File(user.getProfileImagePath());
-//            Image image = new Image(new FileInputStream(file));
-//            ImageView imageView = new ImageView(image);
-//            imageView.setFitHeight(70);
-//            imageView.setFitWidth(70);
-//
-//            int numberOfFriends = getNumberOfFriends(user.getId());
-//            int totalMessages = messageRepo.getTotalMessagesSent(user.getId());
-//
-//            Button unfriendButton = new Button("Unfriend");
-//            unfriendButton.setOnAction(e -> handleUnfriend(user));
-//            Button chatButton = new Button("Chat");
-//            chatButton.setOnAction(e -> handleChat(user));
-//
-//            VBox vBox = new VBox();
-//            vBox.setAlignment(Pos.CENTER);
-//            vBox.setPadding(new Insets(60, 10, 60, 10));
-//            vBox.setSpacing(10);
-//            vBox.getChildren().addAll(
-//                    imageView,
-//                    new Label(user.getName()) {{
-//                        setStyle("-fx-font-size: 24");
-//                    }},
-//                    new Label(numberOfFriends == 1 ? "1 friend" : numberOfFriends + " friends") {{
-//                        setStyle("-fx-font-size: 18");
-//                    }},
-//                    new Label(totalMessages + " messages sent") {{
-//                        setStyle("-fx-font-size: 18");
-//                    }},
-//                    unfriendButton,
-//                    chatButton
-//            );
-//            return vBox;
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//            return new VBox();
-//        }
-//    }
-
-//    private int count(Long id1) {
-//        // total number of friends
-//        String sql = "select count(*) as count from friendships where (id1 = ? or id2 = ?) and status = 'active'";
-//        try (Connection connection = DriverManager.getConnection(url, this.user, password);
-//             PreparedStatement statement = connection.prepareStatement(sql)) {
-//            statement.setLong(1, id1);
-//            statement.setLong(2, id1);
-//            ResultSet result = statement.executeQuery();
-//            int totalNumberOfFriends = 0;
-//            if (result.next()) {
-//                totalNumberOfFriends = result.getInt("count");
-//            }
-//            return totalNumberOfFriends;
-//        } catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//        }
-//        return 0;
-//    }
 
     public int getNumberOfFriends(Long id) {
         String sql = "SELECT COUNT(*) AS count FROM friendships WHERE (id1 = ? OR id2 = ?) AND status = 'active'";
@@ -373,7 +291,7 @@ public class dbFriendshipRepo implements Repository<Tuple<Long, Long>, Friendshi
                 return resultSet.getInt("count");
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.error("Database error: {}", e.getMessage());
         }
         return 0;
     }

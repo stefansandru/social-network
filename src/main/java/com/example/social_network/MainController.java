@@ -44,13 +44,10 @@ public class MainController {
     private String username;
     private String profileImagePath;
     private final SocialNetworkService service;
-    private ObservableMap<User, LocalDateTime> friendsList = FXCollections.observableHashMap();
     private ObservableList<User> notFriendsList = FXCollections.observableArrayList();
     private ObservableMap<User, LocalDateTime> pendingFriendshipsList = FXCollections.observableHashMap();
     private ContextMenu currentContextMenu;
-    private int pageSize = 1;
     private int currentPage = 0;
-    private int totalNumberOfElements = 0;
 
     @FXML
     private Label labelPage;
@@ -86,7 +83,6 @@ public class MainController {
     private Label usernameLabel;
 
 
-
     public MainController() {
         UserValidator userValidator = new UserValidator();
         FriendshipValidator friendshipValidator = new FriendshipValidator();
@@ -113,10 +109,6 @@ public class MainController {
         this.service = new SocialNetworkService(userRepo, friendshipRepo, messageRepo);
     }
 
-    public void initialize() {
-
-    }
-
     public void setUser(Long userId, String username, String profileImagePath) {
         this.userId = userId;
         this.username = username;
@@ -126,11 +118,8 @@ public class MainController {
 
         try {
             File file = new File(profileImagePath);
-            System.out.println(file.getAbsolutePath());
             Image image = new Image(new FileInputStream(file));
-            System.out.println(image);
             profileImageView.setImage(image);
-            System.out.println(profileImageView.getImage());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -138,7 +127,6 @@ public class MainController {
         loadFriends();
         loadNotFriends();
         loadPendingFriendships();
-        loadFriends();
 
         int pendingRequests = pendingFriendshipsList.size();
         if (pendingRequests > 0) {
@@ -164,6 +152,7 @@ public class MainController {
     }
 
     private void loadFriends() {
+        int pageSize = 1;
         Page<User> page = service.findAllOnPage(new Pageable(pageSize, currentPage), userId);
         int maxPage = (int) Math.ceil((double) page.getTotalNumberOfElements() / pageSize) - 1;
         if (maxPage == -1) {
@@ -173,7 +162,7 @@ public class MainController {
             currentPage = maxPage;
             page = service.findAllOnPage(new Pageable(pageSize, currentPage), userId);
         }
-        totalNumberOfElements = page.getTotalNumberOfElements();
+        int totalNumberOfElements = page.getTotalNumberOfElements();
         buttonPrevious.setDisable(currentPage == 0);
         buttonNext.setDisable((currentPage + 1) * pageSize >= totalNumberOfElements);
         List<User> friends = StreamSupport.stream(page.getElementsOnPage().spliterator(), false)

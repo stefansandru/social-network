@@ -11,10 +11,15 @@ import com.example.social_network.paging.Page;
 import com.example.social_network.paging.Pageable;
 import com.example.social_network.util.PasswordUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
 import java.time.LocalDateTime;
 
 public class SocialNetworkService {
+    private static final Logger logger = LoggerFactory.getLogger(SocialNetworkService.class);
+
     private final dbUserRepo userRepo;
     private final dbFriendshipRepo friendshipRepo;
     private final MessageRepo messageRepo;
@@ -26,36 +31,39 @@ public class SocialNetworkService {
         this.messageRepo = messageRepo;
     }
 
-    public void addUser(String username) {
+    public Optional<User> addUser(String username) {
+        if (userRepo.findUserByUsername(username).isPresent()) {
+            throw new RuntimeException("Username already exists");
+        }
         try {
-            if (userRepo.findUserByUsername(username).isPresent()) {
-                throw new RuntimeException("Username already exists");
-            }
             String plainPassword = "pass" + username;
             String hashedPassword = PasswordUtil.hashPassword(plainPassword);
-            Integer imageNumber = new Random().nextInt(6) + 1;
+            int imageNumber = new Random().nextInt(6) + 1;
             String photo =  "/imag" + imageNumber + ".jpeg";
             User user = new User(null, username, hashedPassword, photo);
-            userRepo.save(user);
+            return userRepo.save(user);
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            logger.error("Error adding user {}: {}", username, e.getMessage(), e);
         }
+        return Optional.empty();
     }
 
     public void addFriendship(Long userId1, Long userId2, String Status) {
         try {
             Friendship friendship = new Friendship(userId1, userId2, LocalDateTime.now(), Status);
             friendshipRepo.save(friendship);
+            logger.info("Friendship added between users {} and {}", userId1, userId2);
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            logger.error("Error adding friendship between {} and {}: {}", userId1, userId2, e.getMessage());
         }
     }
 
     public void removeFriendship(Long userId1, Long userId2) {
         try {
             friendshipRepo.delete(new Tuple<>(userId1, userId2));
+            logger.info("Friendship removed between users {} and {}", userId1, userId2);
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            logger.error("Error removing friendship between {} and {}: {}", userId1, userId2, e.getMessage());
         }
     }
 
@@ -78,8 +86,7 @@ public class SocialNetworkService {
 }
 
     public List<User> getNotFriends(Long userId) {
-        List<User > notfriends = friendshipRepo.getNotFriendsRepository(userId);
-        return notfriends;
+        return friendshipRepo.getNotFriendsRepository(userId);
     }
 
     public Map<User, LocalDateTime> getPendingFriendships(Long userId) {
@@ -100,9 +107,16 @@ public class SocialNetworkService {
             List<User> usersTo = new ArrayList<>();
             to.forEach(id -> usersTo.add(userRepo.findOne(id).orElse(null)));
             Message replyMessage = messageRepo.findOne(reply).orElse(null);
-            messageRepo.save(new Message(null, userFrom, usersTo, message, LocalDateTime.now().withNano(0), replyMessage));
+            messageRepo.save(new Message
+                    (null,
+                            userFrom,
+                            usersTo,
+                            message,
+                            LocalDateTime.now().withNano(0),
+                            replyMessage));
+            logger.info("Message sent from user {} to {} users", from, to.size());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error sending message from user {} to {}: {}", from, to, e.getMessage(), e);
         }
     }
 
