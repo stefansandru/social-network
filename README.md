@@ -145,7 +145,7 @@ CREATE TABLE friendships (
 
 ### Step 6: Project Configuration
 
-Replace the values with your own database connection details and profile images path in HelloApplication.java
+Replace the values with your own database connection details and social_network/ProfileImages path in HelloApplication.java
     ```
     src/main/java/com/example/social_network/HelloApplication.java
     ```
