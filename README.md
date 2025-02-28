@@ -14,7 +14,7 @@ This project is a Java application for a Facebook-style social network, running 
 ## System Requirements
 
 - **Java:** Version 17.
-- **JavaFX:** .
+- **JavaFX:** Scroll down and download the latest version for your operating system: [https://gluonhq.com/products/javafx/].
 - **PostgreSQL:** Ensure it is installed and properly configured.
 
 ## Project Structure
