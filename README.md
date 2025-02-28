@@ -4,22 +4,34 @@ This project is a Java application for a Facebook-style social network, running 
 
 ## Main Features
 
-- **User authentication:** Uses encrypted passwords with BCrypt.
-- **User account management:** Create, delete, and update accounts.
-- **Friendship management:** Add, accept, reject, and delete friendships.
-- **Messaging:** Send and receive messages (including replying to previous messages).
-- **Friends list:** View and paginate your friends list within the graphical interface.
-- **Notifications:** Get notified about pending friendship requests.
+- User authentication: Uses encrypted passwords with BCrypt.
+- User account management: Create, delete, and update accounts.
+- Friendship management: Add, accept, reject, and delete friendships.
+- Messaging: Send and receive messages (including replying to previous messages).
+- Friends list: View and paginate your friends list within the graphical interface.
+- Notifications: Get notified about pending friendship requests.
 
 ## System Requirements
 
-- **Java:** Version 17.
-- **JavaFX:** Version 21.0.6.
-- **PostgreSQL:** Ensure it is installed and properly configured.
+- Java: Version 17.
+- JavaFX: Download the latest version for your operating system from [here](https://gluonhq.com/products/javafx/).
+- PostgreSQL: Ensure it is installed and properly configured.
 
 ## Installation and Configuration
 
-### Java 17
+### Step 1: Clone the Repository
+
+1. Open your terminal.
+2. Clone the repository using the following command:
+    ```sh
+    git clone https://github.com/stefansandru/Social_Network.git
+    ```
+3. Navigate into the cloned repository:
+    ```sh
+    cd Social_Network
+    ```
+
+### Step 2: Install Java 17
 
 1. Download and install Java 17 from the [Oracle website](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html).
 2. Verify the installation by running:
@@ -28,13 +40,13 @@ This project is a Java application for a Facebook-style social network, running 
     ```
    Ensure it displays Java 17.
 
-### JavaFX
+### Step 3: Set Up JavaFX
 
 1. Download JavaFX from [Gluon](https://gluonhq.com/products/javafx/).
 2. Follow the installation instructions for your operating system.
 3. Add the JavaFX libraries to your project.
 
-### PostgreSQL
+### Step 4: Install PostgreSQL
 
 1. Download and install PostgreSQL from the [official website](https://www.postgresql.org/download/).
 2. During installation, set up a password for the `postgres` user.
@@ -45,7 +57,7 @@ This project is a Java application for a Facebook-style social network, running 
     \connect social_network;
     ```
 
-### Database Configuration
+### Step 5: Configure the Database
 
 Create the necessary tables in PostgreSQL:
 
@@ -105,7 +117,7 @@ CREATE TABLE friendships (
 );
 ```
 
-### Project Configuration
+### Step 6: Project Configuration
 
 1. Ensure that `HelloApplication.java` and other classes are correctly set up to connect to the PostgreSQL database. The main configuration file is located in the path:
     ```
@@ -118,6 +130,20 @@ CREATE TABLE friendships (
     private static final String USER = "postgres";
     private static final String PASSWORD = "your_password";
     ```
+
+### Step 7: Build and Run the Project
+
+1. Make sure you have Gradle installed. If not, follow the instructions [here](https://gradle.org/install/).
+2. Navigate to the project directory:
+    ```sh
+    cd Social_Network
+    ```
+3. Run the project using Gradle:
+    ```sh
+    ./gradlew run
+    ```
+
+This will build and run the application, opening the JavaFX interface.
 
 ## Project Structure
 
