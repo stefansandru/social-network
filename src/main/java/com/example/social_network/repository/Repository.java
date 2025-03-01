@@ -1,6 +1,6 @@
-package com.example.social_network.Repo;
+package com.example.social_network.repository;
 
-import com.example.social_network.Validator.ValidationException;
+import com.example.social_network.validator.ValidationException;
 import com.example.social_network.domain.Entity;
 
 import java.util.Optional;

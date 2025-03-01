@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" onMouseClicked="#handleGlobalClick" prefHeight="584.0" prefWidth="1047.0" spacing="20" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.social_network.MainController">
+<VBox alignment="CENTER" onMouseClicked="#handleGlobalClick" prefHeight="584.0" prefWidth="1047.0" spacing="20" xmlns="http://javafx.com/javafx/21.0.6" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.social_network.MainController">
     <HBox styleClass="hbox_main">
         <HBox alignment="CENTER_LEFT" spacing="20">
             <ImageView fx:id="profileImageView" fitHeight="60" fitWidth="60" />
@@ -21,7 +21,7 @@
             <Button onAction="#handleMultipleMessage" text="Multiple Users Message" />
         </HBox>
     <Region HBox.hgrow="ALWAYS" />
-    <Label fx:id="notificationLabel" style="-fx-background-color: #fff5ac; -fx-padding: 10; -fx-border-color: #89824f;" text="" visible="false" />
+    <Label fx:id="notificationLabel" style="-fx-background-color: #fff5ac; -fx-padding: 10; -fx-border-color: #89824f;" visible="false" />
     </HBox>
 
     <HBox styleClass="hbox_main">

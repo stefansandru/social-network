@@ -1,14 +1,15 @@
-package com.example.social_network.Service;
+package com.example.social_network.service;
 
-import com.example.social_network.Repo.MessageRepo;
-import com.example.social_network.Repo.dbFriendshipRepo;
-import com.example.social_network.Repo.dbUserRepo;
+import com.example.social_network.repository.MessageRepo;
+import com.example.social_network.repository.FriendshipRepo;
+import com.example.social_network.repository.UserRepo;
 import com.example.social_network.domain.Friendship;
 import com.example.social_network.domain.Message;
 import com.example.social_network.domain.Tuple;
 import com.example.social_network.domain.User;
 import com.example.social_network.paging.Page;
 import com.example.social_network.paging.Pageable;
+import com.example.social_network.validator.UserValidator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,17 +25,18 @@ import static org.mockito.Mockito.*;
 
 class SocialNetworkServiceTest {
 
-    private dbUserRepo userRepo;
-    private dbFriendshipRepo friendshipRepo;
+    private UserRepo userRepo;
+    private FriendshipRepo friendshipRepo;
     private MessageRepo messageRepo;
     private SocialNetworkService sns;
 
     @BeforeEach
     void setUp() {
-        userRepo = Mockito.mock(dbUserRepo.class);
-        friendshipRepo = Mockito.mock(dbFriendshipRepo.class);
+        userRepo = Mockito.mock(UserRepo.class);
+        friendshipRepo = Mockito.mock(FriendshipRepo.class);
         messageRepo = Mockito.mock(MessageRepo.class);
-        sns = new SocialNetworkService(userRepo, friendshipRepo, messageRepo);
+        UserValidator userValidator = Mockito.mock(UserValidator.class);
+        sns = new SocialNetworkService(userRepo, friendshipRepo, messageRepo, userValidator);
     }
 
     @Test
@@ -167,13 +169,13 @@ class SocialNetworkServiceTest {
             new User(3L, "testUser3", "pass", "/img.jpeg")
         ));
         
-        when(userRepo.findUsersByPrefix(prefix)).thenReturn(repoUsers);
+        when(userRepo.findUsersByPrefix(prefix, userId)).thenReturn(repoUsers);
         
         List<User> result = sns.findUsersByPrefix(prefix, userId);
         
         assertEquals(2, result.size());
         assertFalse(result.stream().anyMatch(u -> u.getId().equals(userId)));
-        verify(userRepo).findUsersByPrefix(prefix);
+        verify(userRepo).findUsersByPrefix(prefix, userId);
     }
 
     @Test

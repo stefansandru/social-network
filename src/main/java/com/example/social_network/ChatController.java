@@ -1,12 +1,12 @@
 package com.example.social_network;
 
-import com.example.social_network.Repo.MessageRepo;
-import com.example.social_network.Repo.dbFriendshipRepo;
-import com.example.social_network.Repo.dbUserRepo;
-import com.example.social_network.Service.SocialNetworkService;
-import com.example.social_network.Validator.FriendshipValidator;
-import com.example.social_network.Validator.UserValidator;
+import com.example.social_network.repository.MessageRepo;
+import com.example.social_network.repository.FriendshipRepo;
+import com.example.social_network.repository.UserRepo;
+import com.example.social_network.service.SocialNetworkService;
+import com.example.social_network.validator.UserValidator;
 import com.example.social_network.domain.Message;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,6 +17,9 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -37,28 +40,28 @@ public class ChatController {
     @FXML
     private ListView<Message> chatListView;
 
+    private static final Logger logger = LoggerFactory.getLogger(FriendshipRepo.class);
+
     private Long mainUserId;
     private String mainUsername;
     private String mainProfilePhoto;
     private Long selectedUserId;
     private String selectedUsername;
-    private SocialNetworkService service;
+    private final SocialNetworkService service;
     private Message selectedMessage;
 
     public ChatController() {
-        UserValidator userValidator = new UserValidator();
-        FriendshipValidator friendshipValidator = new FriendshipValidator();
-
         String url = DBConnectionAndProfileImagesPath.INSTANCE.getUrl();
         String user = DBConnectionAndProfileImagesPath.INSTANCE.getUser();
         String password = DBConnectionAndProfileImagesPath.INSTANCE.getPassword();
         String photosFolder = DBConnectionAndProfileImagesPath.INSTANCE.getPhotosFolder();
 
-        dbUserRepo userRepo = new dbUserRepo(userValidator, url, user, password, photosFolder);
-        dbFriendshipRepo friendshipRepo = new dbFriendshipRepo(friendshipValidator, url, user, password, photosFolder);
+        UserRepo userRepo = new UserRepo(url, user, password, photosFolder);
+        FriendshipRepo friendshipRepo = new FriendshipRepo(url, user, password, photosFolder);
         MessageRepo messageRepo = new MessageRepo(url, user, password, userRepo);
 
-        this.service = new SocialNetworkService(userRepo, friendshipRepo, messageRepo);
+        UserValidator userValidator = new UserValidator();
+        this.service = new SocialNetworkService(userRepo, friendshipRepo, messageRepo, userValidator);
     }
 
     public void setUsers(
@@ -78,11 +81,11 @@ public class ChatController {
     private void loadMessages() {
         messagesList.clear();
         List<Message> messages = service.getChat(mainUserId, selectedUserId);
-        messages.sort(Comparator.comparing(Message::getDate)); // Sort messages by date
+        messages.sort(Comparator.comparing(Message::getDate));
 
         messagesList.addAll(messages);
         chatListView.setItems(messagesList);
-        chatListView.setCellFactory(param -> new ListCell<Message>() {
+        chatListView.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(Message message, boolean empty) {
                 super.updateItem(message, empty);
@@ -113,7 +116,7 @@ public class ChatController {
             stage.centerOnScreen();
             stage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 

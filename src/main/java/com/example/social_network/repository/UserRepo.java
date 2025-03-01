@@ -1,6 +1,5 @@
-package com.example.social_network.Repo;
+package com.example.social_network.repository;
 
-import com.example.social_network.Validator.UserValidator;
 import com.example.social_network.domain.User;
 
 import java.sql.*;
@@ -11,22 +10,19 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class dbUserRepo implements Repository<Long, User> {
-    private static final Logger logger = LoggerFactory.getLogger(dbUserRepo.class);
+public class UserRepo implements Repository<Long, User> {
+    private static final Logger logger = LoggerFactory.getLogger(UserRepo.class);
 
     private final String url;
     private final String user;
     private final String password;
     private final String photosFolder;
-    UserValidator validator;
 
-    public dbUserRepo(
-            UserValidator validator,
+    public UserRepo(
             String url,
             String user,
             String password,
             String photosFolder) {
-        this.validator = validator;
         this.url = url;
         this.user = user;
         this.password = password;
@@ -76,13 +72,14 @@ public class dbUserRepo implements Repository<Long, User> {
         return users.values();
     }
 
-    public Iterable<User> findUsersByPrefix(String prefix) {
+    public Iterable<User> findUsersByPrefix(String prefix, Long userID) {
         Map<Long, User> users = new HashMap<>();
-        String query = "SELECT * FROM users WHERE name LIKE ?";
+        String query = "SELECT * FROM users WHERE name LIKE ? AND ID != ?";
         try (Connection connection = DriverManager.getConnection(url, this.user, password);
              PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setString(1, prefix + "%");
+            statement.setLong(2, userID);
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {

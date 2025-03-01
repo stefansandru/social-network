@@ -1,21 +1,20 @@
 package com.example.social_network;
 
-import com.example.social_network.Repo.MessageRepo;
-import com.example.social_network.Repo.dbFriendshipRepo;
-import com.example.social_network.Repo.dbUserRepo;
-import com.example.social_network.Service.SocialNetworkService;
-import com.example.social_network.Validator.FriendshipValidator;
-import com.example.social_network.Validator.UserValidator;
+import com.example.social_network.repository.MessageRepo;
+import com.example.social_network.repository.FriendshipRepo;
+import com.example.social_network.repository.UserRepo;
+import com.example.social_network.service.SocialNetworkService;
+import com.example.social_network.validator.UserValidator;
 import com.example.social_network.domain.Constants;
 import com.example.social_network.domain.User;
 import com.example.social_network.paging.Page;
 import com.example.social_network.paging.Pageable;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -29,6 +28,9 @@ import javafx.scene.image.ImageView;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -39,13 +41,14 @@ import java.util.Objects;
 import java.util.stream.StreamSupport;
 
 public class MainController {
+    private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
     private Long userId;
     private String username;
     private String profileImagePath;
     private final SocialNetworkService service;
-    private ObservableList<User> notFriendsList = FXCollections.observableArrayList();
-    private ObservableMap<User, LocalDateTime> pendingFriendshipsList = FXCollections.observableHashMap();
+    private final ObservableList<User> notFriendsList = FXCollections.observableArrayList();
+    private final ObservableMap<User, LocalDateTime> pendingFriendshipsList = FXCollections.observableHashMap();
     private ContextMenu currentContextMenu;
     private int currentPage = 0;
 
@@ -57,9 +60,6 @@ public class MainController {
 
     @FXML
     private Button buttonNext;
-
-//    @FXML
-//    private ListView<User> friendsListView;
 
     @FXML
     private VBox friendsVBox;
@@ -82,31 +82,26 @@ public class MainController {
     @FXML
     private Label usernameLabel;
 
-
     public MainController() {
-        UserValidator userValidator = new UserValidator();
-        FriendshipValidator friendshipValidator = new FriendshipValidator();
-
         String url = DBConnectionAndProfileImagesPath.INSTANCE.getUrl();
         String user = DBConnectionAndProfileImagesPath.INSTANCE.getUser();
         String password = DBConnectionAndProfileImagesPath.INSTANCE.getPassword();
         String photosFolder = DBConnectionAndProfileImagesPath.INSTANCE.getPhotosFolder();
 
-        dbUserRepo userRepo = new dbUserRepo(
-                userValidator,
+        UserRepo userRepo = new UserRepo(
                 url,
                 user,
                 password,
                 photosFolder);
-        dbFriendshipRepo friendshipRepo = new dbFriendshipRepo(
-                friendshipValidator,
+        FriendshipRepo friendshipRepo = new FriendshipRepo(
                 url,
                 user,
                 password,
                 photosFolder);
         MessageRepo messageRepo = new MessageRepo(url, user, password, userRepo);
 
-        this.service = new SocialNetworkService(userRepo, friendshipRepo, messageRepo);
+        UserValidator userValidator = new UserValidator();
+        this.service = new SocialNetworkService(userRepo, friendshipRepo, messageRepo, userValidator);
     }
 
     public void setUser(Long userId, String username, String profileImagePath) {
@@ -121,7 +116,7 @@ public class MainController {
             Image image = new Image(new FileInputStream(file));
             profileImageView.setImage(image);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            logger.error("Failed to load profile image: {}", e.getMessage(), e);
         }
 
         loadFriends();
@@ -136,14 +131,14 @@ public class MainController {
 
     @FXML
     private void handleGlobalClick(MouseEvent event) {
+        // Clear selection when clicking outside the list views
+
         Object source = event.getTarget();
 
-        // Dacă nu s-a făcut clic pe ListView, deselectăm toate
         if (!(source instanceof ListView)) {
             searchResultsListView.getSelectionModel().clearSelection();
             pendingFriendshipsListView.getSelectionModel().clearSelection();
 
-            // Ascunde orice meniu contextual deschis
             if (currentContextMenu != null) {
                 currentContextMenu.hide();
                 currentContextMenu = null;
@@ -208,7 +203,7 @@ public class MainController {
 
                 friendsVBox.getChildren().add(userVBox);
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                logger.error("Failed to load friend's image: {}", e.getMessage(), e);
             }
         }
         labelPage.setText("Page " + (currentPage + 1) + " of " + (maxPage + 1));
@@ -338,7 +333,7 @@ public class MainController {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error during logout: {}", e.getMessage(), e);
         }
     }
 
@@ -355,7 +350,7 @@ public class MainController {
             stage.centerOnScreen();
             stage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error initializing chat: {}", e.getMessage(), e);
         }
     }
 
@@ -372,7 +367,7 @@ public class MainController {
             stage.centerOnScreen();
             stage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error initializing multiple message: {}", e.getMessage(), e);
         }
     }
 
@@ -389,12 +384,12 @@ public class MainController {
         timeline.play();
     }
 
-    public void handleNext(ActionEvent actionEvent) {
+    public void handleNext() {
         currentPage ++;
         loadFriends();
     }
 
-    public void handlePrevious(ActionEvent actionEvent) {
+    public void handlePrevious() {
         currentPage --;
         loadFriends();
     }

@@ -1,4 +1,4 @@
-package com.example.social_network.Validator;
+package com.example.social_network.validator;
 
 import com.example.social_network.domain.User;
 

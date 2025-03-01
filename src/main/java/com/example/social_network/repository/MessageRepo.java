@@ -1,4 +1,4 @@
-package com.example.social_network.Repo;
+package com.example.social_network.repository;
 
 import com.example.social_network.domain.Message;
 import com.example.social_network.domain.User;
@@ -18,9 +18,9 @@ public class MessageRepo {
     private final String url;
     private final String user;
     private final String password;
-    protected final dbUserRepo userRepo;
+    protected final UserRepo userRepo;
 
-    public MessageRepo(String url, String user, String password, dbUserRepo userRepo) {
+    public MessageRepo(String url, String user, String password, UserRepo userRepo) {
         this.url = url;
         this.user = user;
         this.password = password;
@@ -31,26 +31,27 @@ public class MessageRepo {
         if (id == null) {
             return Optional.empty();
         }
-        String query = "SELECT * FROM messages WHERE id = ?";
         Message message = null;
+        String query = "SELECT * FROM messages WHERE id = ?";
 
         try (Connection connection = DriverManager.getConnection(url, this.user, password);
              PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setLong(1, id);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                Long messageId = resultSet.getLong("id");
-                Long fromId = resultSet.getLong("from_user_id");
-                String messageString = resultSet.getString("message");
-                LocalDateTime date = resultSet.getTimestamp("date").toLocalDateTime();
-                message = new Message(
-                        messageId,
-                        userRepo.findOne(fromId).orElse(null),
-                        new ArrayList<>(),
-                        messageString,
-                        date,
-                        null);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    Long messageId = resultSet.getLong("id");
+                    Long fromId = resultSet.getLong("from_user_id");
+                    String messageString = resultSet.getString("message");
+                    LocalDateTime date = resultSet.getTimestamp("date").toLocalDateTime();
+                    message = new Message(
+                            messageId,
+                            userRepo.findOne(fromId).orElse(null),
+                            new ArrayList<>(),
+                            messageString,
+                            date,
+                            null);
+                }
             }
         } catch (SQLException e) {
             logger.error("Database operation failed", e);
@@ -73,41 +74,26 @@ public class MessageRepo {
             statement.setLong(3, id2);
             statement.setLong(4, id1);
 
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                Long messageId = resultSet.getLong("id");
-                Long fromId = resultSet.getLong("from_user_id");
-                String messageString = resultSet.getString("message");
-                LocalDateTime date = resultSet.getTimestamp("date").toLocalDateTime();
-                Long replyId = resultSet.getLong("reply_to");
-
-                User userFrom = userRepo.findOne(fromId).orElse(null);
-                List<User> usersTo = findRecipients(messageId);
-                Message replyMessage = findOne(replyId).orElse(null);
-                Message message = new Message(messageId, userFrom, usersTo, messageString, date, replyMessage);
-                messages.add(message);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Long messageId = resultSet.getLong("id");
+                    Long fromId = resultSet.getLong("from_user_id");
+                    String messageString = resultSet.getString("message");
+                    LocalDateTime date = resultSet.getTimestamp("date").toLocalDateTime();
+                    Message message = new Message(
+                            messageId,
+                            userRepo.findOne(fromId).orElse(null),
+                            new ArrayList<>(),
+                            messageString,
+                            date,
+                            null);
+                    messages.add(message);
+                }
             }
         } catch (SQLException e) {
             logger.error("Database operation failed", e);
         }
         return messages;
-    }
-
-    private List<User> findRecipients(Long messageId) throws SQLException {
-        List<User> recipients = new ArrayList<>();
-        String query = "SELECT to_user_id FROM message_recipients WHERE message_id = ?";
-
-        try (Connection connection = DriverManager.getConnection(url, this.user, password);
-             PreparedStatement statement = connection.prepareStatement(query)) {
-
-            statement.setLong(1, messageId);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                Long userId = resultSet.getLong("to_user_id");
-                userRepo.findOne(userId).ifPresent(recipients::add);
-            }
-        }
-        return recipients;
     }
 
     public Optional<Message> save(Message message) {
@@ -128,8 +114,8 @@ public class MessageRepo {
                         saveRecipients(message);
                     }
                 }
-                return Optional.of(message);
             }
+            return Optional.of(message);
         } catch (SQLException e) {
             logger.error("Database operation failed", e);
         }
@@ -159,9 +145,10 @@ public class MessageRepo {
              PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setLong(1, id);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                count = resultSet.getInt(1);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    count = resultSet.getInt(1);
+                }
             }
         } catch (SQLException e) {
             logger.error("Database operation failed", e);
