@@ -1,91 +1,93 @@
 # Social_Network
 
-This project is a Java application for a Facebook-style social network, running with a JavaFX graphical interface and PostgreSQL database. The purpose of the application is to allow users to register, log in, add friends, send private messages, and view chats.
+This project is a Java application for a Facebook-style social network, running with a JavaFX graphical interface and PostgreSQL database. The purpose of the application is to allow users to register, interact, and communicate with each other.
 
 ## Main Features
 
-- **User authentication:** Uses encrypted passwords with BCrypt.
-- **User account management:** Create, delete, and update accounts.
-- **Friendship management:** Add, accept, reject, and delete friendships.
-- **Messaging:** Send and receive messages (including replying to previous messages).
-- **Friends list:** View and paginate your friends list within the graphical interface.
-- **Notifications:** Get notified about pending friendship requests.
+- User authentication: Uses encrypted passwords with BCrypt.
+- User account management: Create, delete, and update accounts.
+- Friendship management: Add, accept, reject, and delete friendships.
+- Messaging: Send and receive messages (including replying to previous messages).
+- Friends list: View and paginate your friends list within the graphical interface.
+- Notifications: Get notified about pending friendship requests.
 
 ## System Requirements
 
-- **Java:** Version 17.
-- **JavaFX:** [Download and configuration instructions]([https://openjfx.io/](https://gluonhq.com/products/javafx/)).
-- **PostgreSQL:** Ensure it is installed and properly configured.
+- Java: Version 17
+- JavaFX: Version 21.0.6
+- PostgreSQL: Ensure it is installed and properly configured
 
-## Project Structure
+## Installation and Configuration
 
-The main Java files are in the `com.example.social_network` package:
+### Step 1: Clone the Repository
 
-- **HelloApplication.java** – The starter class for the JavaFX application.
-- **MainController.java** – Manages the main interface (listing friends, search functionality, etc.).
-- **LoginController.java** – Handles the login screen.
-- **ChatController.java** – Manages the chat window (displaying messages, sending messages, replying, etc.).
-- **MultipleMessage.java** – Facilitates sending messages to multiple recipients.
-- **DBConnectionAndProfileImagesPath.java** – A singleton for database connection configuration.
+1. Open your terminal.
+2. Clone the repository using the following command:
+    ```sh
+    git clone https://github.com/stefansandru/Social_Network.git
+    ```
+3. Navigate into the cloned repository:
+    ```sh
+    cd Social_Network
+    ```
 
-### Service Package
+### Step 2: Install Java 17
 
-- **SocialNetworkService.java** – Contains the core application logic (friendships, messaging, data display, etc.).
+1. Download and install Java 17 from the [Oracle website](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html).
+2. Verify the installation by running:
+    ```sh
+    java -version
+    ```
+   Ensure it displays Java 17.
 
-### Repository Package
+### Step 3: Set Up JavaFX
 
-- **dbUserRepo.java** – Handles interactions with the `users` table.
-- **dbFriendshipRepo.java** – Handles interactions with the `friendships` table.
-- **MessageRepo.java** – Manages interactions with the `messages` table and its relationship with message recipients.
+You can download the JavaFX SDK 21.0.6 from the official Gluon website. Here is the link to download and instructions on how to configure it:
 
-### Domain Package (Model)
+1. [Download JavaFX SDK 21.0.6](https://gluonhq.com/products/javafx/)
+2. Extract the downloaded SDK to a directory of your choice.
+3. Add the `lib` directory from the extracted SDK to your project's module path.
 
-Contains the model classes:
+If you are using **IntelliJ IDEA**:
 
-- **User.java, Friendship.java, Message.java, Tuple.java, etc.**
-- These classes represent the database entities and the data managed by the application.
+1. Open your project settings (File > Project Structure).
+2. Go to Modules > Dependencies.
+3. Click the `+` icon and select "JARs or directories".
+4. Choose the `lib` directory from the extracted JavaFX SDK.
+   Make sure to also add the necessary VM options to run your JavaFX application:
 
-### Utility Package
+```
+--module-path /path/to/javafx-sdk-21.0.6/lib --add-modules javafx.controls,javafx.fxml
+```
+Replace `/path/to/javafx-sdk-21.0.6/lib` with the actual path where you extracted the SDK.
 
-- **PasswordUtil.java** – Provides password encryption and verification functionalities using BCrypt.
+If you are using **Visual Studio Code**:
 
-### JavaFX Resources (Scene Builder)
+1. Install the Extension Pack for Java by Microsoft from Visual Studio Code Extensions.
+2. Add the `javafx-sdk-21.0.6/lib` folder to JAVA PROJECTS, Referenced Libraries
+   <img width="403" alt="image" src="https://github.com/user-attachments/assets/643d5ac6-aed4-4fcb-96fc-6f1e270f16eb" />
 
-- **FXML Files:** For screens like `login-view.fxml`, `main-view.fxml`, `chat-view.fxml`, etc.
-- **CSS/Style Files:** Such as `style.css`.
+3. If necessary, add the following VM options in your launch.json file to include JavaFX modules:
+```json
+"vmArgs": "--module-path /path/to/javafx-sdk-21.0.6/lib --add-modules javafx.controls,javafx.fxml"
+```
+Replace `/path/to/javafx-sdk-21.0.6/lib` with the actual path where you extracted the SDK.
+### Step 4: Install PostgreSQL
 
-## Database
+1. Download and install PostgreSQL from the [official website](https://www.postgresql.org/download/).
+2. During installation, set up a password for the `postgres` user.
+3. Create a new database for the application:
+    ```sh
+    psql postgres
+    CREATE DATABASE social_network;
+    \connect social_network;
+    ```
 
-The following tables need to exist in PostgreSQL:
+### Step 5: Configure the Database
 
-### users
-- **Columns:** `ID` (SERIAL PRIMARY KEY), `name` (VARCHAR), `password` (VARCHAR), `profile_image_path` (VARCHAR).
-
-### friendships
-- **Columns:** `ID1` (INTEGER), `ID2` (INTEGER), `F_DATE` (TIMESTAMP), `STATUS` (VARCHAR).  
-  *Note:* `ID1` and `ID2` represent the IDs of users who form a friendship.
-
-### messages
-- **Columns:** `id` (SERIAL PRIMARY KEY), `from_user_id` (INTEGER), `message` (TEXT), `date` (TIMESTAMP), `reply_to` (INTEGER).
-
-### message_recipients
-- **Columns:** `message_id` (INTEGER), `to_user_id` (INTEGER).  
-  This table maps messages to their respective recipients.
-
-## Database Configuration Scripts
-
-To configure the database required for the application, follow these steps in your terminal:
+Create the necessary tables in PostgreSQL:
 
 ```sql
--- Connect to PostgreSQL
-psql postgres
-
--- Create database
-CREATE DATABASE social_network;
-
--- Connect to the database
-\connect social_network;
-
 -- Create tables
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -124,7 +126,7 @@ CREATE TABLE message_recipients (
         ON DELETE CASCADE
 );
 
-CREATE TABLE Friendships (
+CREATE TABLE friendships (
     ID1 INTEGER NOT NULL,
     ID2 INTEGER NOT NULL,
     F_DATE TIMESTAMP NOT NULL,
@@ -139,8 +141,62 @@ CREATE TABLE Friendships (
         REFERENCES users(id)
         ON DELETE CASCADE
 );
+```
 
--- Verify tables
-\dt
+### Step 6: Project Configuration
 
+Replace the values with your own database connection details and social_network/ProfileImages path in HelloApplication.java
+```
+src/main/java/com/example/social_network/HelloApplication.java
+```
 
+### Step 7: Build and Run the Project
+
+1. Make sure you have Gradle installed. If not, follow the instructions [here](https://gradle.org/install/).
+2. Navigate to the project directory:
+    ```sh
+    cd Social_Network
+    ```
+3. Run the project using Gradle:
+    ```sh
+    ./gradlew run
+    ```
+
+This will build and run the application, opening the JavaFX interface.
+
+## Project Structure
+
+The main Java files are in the `com.example.social_network` package:
+
+- **HelloApplication.java** – The starter class for the JavaFX application.
+- **MainController.java** – Manages the main interface (listing friends, search functionality, etc.).
+- **LoginController.java** – Handles the login screen.
+- **ChatController.java** – Manages the chat window (displaying messages, sending messages, replying, etc.).
+- **MultipleMessage.java** – Facilitates sending messages to multiple recipients.
+- **DBConnectionAndProfileImagesPath.java** – A singleton for database connection configuration.
+
+### Service Package
+
+- **SocialNetworkService.java** – Contains the core application logic (friendships, messaging, data display, etc.).
+
+### Repository Package
+
+- **dbUserRepo.java** – Handles interactions with the `users` table.
+- **dbFriendshipRepo.java** – Handles interactions with the `friendships` table.
+- **MessageRepo.java** – Manages interactions with the `messages` table and its relationship with message recipients.
+
+### Domain Package (Model)
+
+Contains the model classes:
+
+- **User.java, Friendship.java, Message.java, Tuple.java, etc.**
+- These classes represent the database entities and the data managed by the application.
+
+### Utility Package
+
+- **PasswordUtil.java** – Provides password encryption and verification functionalities using BCrypt.
+
+### JavaFX Resources (Scene Builder)
+
+- **FXML Files:** For screens like `login-view.fxml`, `main-view.fxml`, `chat-view.fxml`, etc.
+- **CSS/Style Files:** Such as `style.css`.
