@@ -47,7 +47,7 @@ public class UserRepo implements Repository<Long, User> {
                 user = new User(userID, name, password, photosFolder + profileImagePath);
             }
         } catch (SQLException e) {
-            logger.error("Database error:", e);        }
+            logger.error("Database error: User findOne.", e);        }
         return Optional.ofNullable(user);
     }
 
@@ -68,7 +68,7 @@ public class UserRepo implements Repository<Long, User> {
                 users.put(id, user);
             }
         } catch (SQLException e) {
-            logger.error("Database error:", e);        }
+            logger.error("Database error: Iterable<User> findAll", e);        }
         return users.values();
     }
 
@@ -91,7 +91,7 @@ public class UserRepo implements Repository<Long, User> {
                 users.put(id, user);
             }
         } catch (SQLException e) {
-            logger.error("Database error:", e);        }
+            logger.error("Database error: Iterable<User> findUsersByPrefix", e);        }
         return users.values();
     }
 
@@ -115,7 +115,7 @@ public class UserRepo implements Repository<Long, User> {
                 return Optional.of(entity);
             }
         } catch (SQLException e) {
-            logger.error("Database error:", e);        }
+            logger.error("Database error: Optional<User> save", e);        }
         return Optional.empty();
     }
 
@@ -134,7 +134,8 @@ public class UserRepo implements Repository<Long, User> {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            logger.error("Database error:", e);            return Optional.empty();
+            logger.error("Database error: Optional<User> delete", e);
+            return Optional.empty();
         }
         return userToDelete;
     }
@@ -158,7 +159,7 @@ public class UserRepo implements Repository<Long, User> {
             }
 
         } catch (SQLException e) {
-            logger.error("Database error:", e);        }
+            logger.error("Database error: Optional<User> update", e);        }
         return Optional.of(entity);
     }
 
@@ -179,7 +180,7 @@ public class UserRepo implements Repository<Long, User> {
             }
 
         } catch (SQLException e) {
-            logger.error("Database error:", e);        }
+            logger.error("Database error: Optional<User> findUserByUsername", e);        }
         return Optional.empty();
     }
 }

@@ -34,7 +34,7 @@ public class FriendshipRepo implements Repository<Tuple<Long, Long>, Friendship>
     }
 
     public Optional<Friendship> findOne(Tuple<Long, Long> ID) {
-        String query = "SELECT * FROM Friendships WHERE (ID1 = ? AND ID2 = ?) OR (ID1 = ? AND ID2 = ?)";
+        String query = "SELECT * FROM friendships WHERE (ID1 = ? AND ID2 = ?) OR (ID1 = ? AND ID2 = ?)";
         Friendship friendship = null;
         try (Connection connection = DriverManager.getConnection(url, this.user, password);
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -56,7 +56,7 @@ public class FriendshipRepo implements Repository<Tuple<Long, Long>, Friendship>
             }
 
         } catch (SQLException e) {
-            logger.error("Error getting friendship {}: {}", ID, e.getMessage());
+            logger.error("Datebase error while findOne Friendship {}", ID, e);
         }
         return Optional.ofNullable(friendship);
     }
@@ -81,14 +81,14 @@ public class FriendshipRepo implements Repository<Tuple<Long, Long>, Friendship>
             }
 
         } catch (SQLException e) {
-            logger.error("Error getting friendships: {}", e.getMessage());
+            logger.error("Database error while findAll Friendships: {}", e.getMessage());
         }
         return friendships.values();
     }
 
     @Override
     public Optional<Friendship> save(Friendship entity) {
-        String query = "INSERT INTO Friendships(ID1, ID2, F_DATE, STATUS) VALUES (?,?,?,?)";
+        String query = "INSERT INTO friendships(ID1, ID2, F_DATE, STATUS) VALUES (?,?,?,?)";
         Friendship friendship = null;
 
         try (Connection connection = DriverManager.getConnection(url, this.user, password);
@@ -102,7 +102,7 @@ public class FriendshipRepo implements Repository<Tuple<Long, Long>, Friendship>
                 friendship = entity;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.error("Database error while save Friendship.", e);
         }
 
         return Optional.ofNullable(friendship);
@@ -112,7 +112,7 @@ public class FriendshipRepo implements Repository<Tuple<Long, Long>, Friendship>
     public Optional<Friendship> delete(Tuple<Long, Long> ID) {
         Optional<Friendship> friendshipToDelete = Optional.empty();
 
-        String query = "DELETE FROM Friendships WHERE ID1 = ? AND ID2 = ? OR ID1 = ? AND ID2 = ?";
+        String query = "DELETE FROM friendships WHERE ID1 = ? AND ID2 = ? OR ID1 = ? AND ID2 = ?";
         try (Connection connection = DriverManager.getConnection(url, this.user, password);
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, ID.getLeft());
@@ -125,7 +125,7 @@ public class FriendshipRepo implements Repository<Tuple<Long, Long>, Friendship>
                 friendshipToDelete = findOne(ID);
             }
         } catch (SQLException e) {
-            logger.error("Error deleting friendship: {}", e.getMessage());
+            logger.error("Database error while delete Friendship", e);
         }
 
         return friendshipToDelete;
@@ -134,7 +134,7 @@ public class FriendshipRepo implements Repository<Tuple<Long, Long>, Friendship>
     @Override
     public Optional<Friendship> update(Friendship entity) {
         Friendship friendship = null;
-        String query = "UPDATE Friendships SET F_DATE = ?, STATUS = ? WHERE ID1 = ? AND ID2 = ? OR ID1 = ? AND ID2 = ?";
+        String query = "UPDATE friendships SET F_DATE = ?, STATUS = ? WHERE ID1 = ? AND ID2 = ? OR ID1 = ? AND ID2 = ?";
 
         try (Connection connection = DriverManager.getConnection(url, this.user, password);
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -203,7 +203,7 @@ public class FriendshipRepo implements Repository<Tuple<Long, Long>, Friendship>
                 notFriends.add(new User(id, name, password, profileImagePath));
             }
         } catch (SQLException e) {
-            logger.error("Database error while getNotFriendsRepository: {}", e.getMessage());
+            logger.error("Database error while getNotFriendsRepository.", e);
         }
         return notFriends;
     }
@@ -268,7 +268,7 @@ public class FriendshipRepo implements Repository<Tuple<Long, Long>, Friendship>
                 numberOfFriends = resultSet.getInt("count");
             }
         } catch (SQLException e) {
-            logger.error("Database error: {}", e.getMessage());
+            logger.error("Database error while getNumberOfFriends", e);
         }
         return numberOfFriends;
     }

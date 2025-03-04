@@ -54,7 +54,7 @@ public class MessageRepo {
                 }
             }
         } catch (SQLException e) {
-            logger.error("Database operation failed", e);
+            logger.error("Database error while findOne Message", e);
         }
         return Optional.ofNullable(message);
     }
@@ -91,7 +91,7 @@ public class MessageRepo {
                 }
             }
         } catch (SQLException e) {
-            logger.error("Database operation failed", e);
+            logger.error("Database error while findChat", e);
         }
         return messages;
     }
@@ -117,7 +117,7 @@ public class MessageRepo {
             }
             return Optional.of(message);
         } catch (SQLException e) {
-            logger.error("Database operation failed", e);
+            logger.error("Database error: Message save", e);
         }
         return Optional.empty();
     }
@@ -151,7 +151,7 @@ public class MessageRepo {
                 }
             }
         } catch (SQLException e) {
-            logger.error("Database operation failed", e);
+            logger.error("Database error: int getTotalMessagesSent", e);
         }
         return count;
     }
